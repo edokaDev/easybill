@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Transaction;
+use App\Models\User;
 use Faker;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -18,10 +19,12 @@ class TransactionsTableSeeder extends Seeder
         Transaction::truncate();
 
         $faker = Faker\Factory::create();
+        $userIds = User::all()->pluck('id')->toArray();
 
         for ($i=0; $i < 10; $i++) {
+            $userId = $faker->randomElement($userIds);
             Transaction::create([
-                'user_id' => $faker->numberBetween($min = 1, $max = 3),
+                'user_id' => $userId,
                 'description' => $faker->sentence,
                 'amount' => $faker->numberBetween($min = 500, $max = 10000),
                 'fees' => $faker->numberBetween($min = 20, $max = 100),
