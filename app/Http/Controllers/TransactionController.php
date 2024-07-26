@@ -22,27 +22,18 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
+        $validatedData = $request->validate([
+            'user_id' => 'required|integer',
+            'description' => 'required|string',
+            'amount' => 'required|numeric',
+            'status' => 'required|string',
+            'fees' => 'nullable|numeric',
+            'transaction_type' => 'required|string',
+            'payment_method' => 'required|string',
+        ]);
 
-        try {
-            $validatedData = $request->validate([
-                'user_id' => 'required|integer',
-                'description' => 'required|string',
-                'amount' => 'required|numeric',
-                'status' => 'required|string',
-                'fees' => 'nullable|numeric',
-                'transaction_type' => 'required|string',
-                'payment_method' => 'required|string',
-            ]);
-
-            $transaction = Transaction::create($validatedData);
-            return response()->json(new TransactionResource($transaction), 201);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'errors' => $e->errors()
-            ], 422);
-        } catch (Throwable $th) {
-            return response()->json(['error' => 'Error creating transaction'], 400);
-        }
+        $transaction = Transaction::create($validatedData);
+        return response()->json(new TransactionResource($transaction), 201);
     }
 
 
@@ -68,14 +59,9 @@ class TransactionController extends Controller
             'transaction_type' => 'nullable|string',
             'payment_method' => 'nullable|string',
         ]);
-        try {
+        $transaction->update($validatedData);
 
-            $transaction->update($validatedData);
-
-            return response()->json(new TransactionResource($transaction), 200);
-        } catch (Throwable $th) {
-            return response()->json(['error' => 'Error updating transaction'], 400);
-        }
+        return response()->json(new TransactionResource($transaction), 200);
     }
 
     /**

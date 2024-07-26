@@ -24,22 +24,14 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $validatedData = $request->validate([
-                'name' => 'required|string',
-                'email' => 'required|email|unique:users',
-                'password' => 'required|string|min:8',
-            ]);
+        $validatedData = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:8',
+        ]);
 
-            $user = User::create($validatedData);
-            return response()->json(new UserResource($user), 201);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'errors' => $e->errors()
-            ], 422);
-        } catch (Throwable $th) {
-            return response()->json(['error' => 'Error creating user'], 400);
-        }
+        $user = User::create($validatedData);
+        return response()->json(new UserResource($user), 201);
     }
 
     /**
@@ -56,15 +48,12 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $validatedData = $request->validate([
-            'name' => 'nullable|string'
+            'name' => 'nullable|string',
+            'email' => 'nullable|email'
         ]);
-        try {
-            $user->update($validatedData);
+        $user->update($validatedData);
 
-            return response()->json(new UserResource($user), 200);
-        } catch (Throwable $th) {
-            return response()->json(['msg' => 'Error updating user', 'error' => $th->getMessage()], 400);
-        }
+        return response()->json(new UserResource($user), 200);
     }
 
     /**
